@@ -153,6 +153,17 @@ class CliView(View):
 
         print("")
 
+    def show_no_customers_leaving_message(self) -> None:
+        print("No customers decided to leave today.\n")
+
+    def show_leaving_customers_message(self, customers: Sequence[Customer]) -> None:
+        print("The following customers left today due to their rate being too high:")
+
+        for customer in customers:
+            print(f"- {customer.get_name()}")
+
+        print("")
+
     def _format_money(self, amount: int) -> str:
         negative_flag = amount < 0
         

@@ -69,3 +69,11 @@ class View(ABC):
     @abstractmethod
     def show_tracked_customer_data(self, customers: Sequence[Customer]) -> None:
         pass
+
+    @abstractmethod
+    def show_no_customers_leaving_message(self) -> None:
+        pass
+
+    @abstractmethod
+    def show_leaving_customers_message(self, customers: Sequence[Customer]) -> None:
+        pass

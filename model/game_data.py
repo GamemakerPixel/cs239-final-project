@@ -35,10 +35,15 @@ class Customer:
     MIN_RATE = 50
     MAX_RATE = 750
 
+    _MIN_FAIR_RATE = 100
+    _MAX_FAIR_RATE = 700
+
     _MIN_SMALL_CRASH_RATE = 0.04
     _MAX_SMALL_CRASH_RATE = 0.2
     _MIN_LARGE_CRASH_RATE = 0.0
     _MAX_LARGE_CRASH_RATE = 0.2
+
+    _CHANCE_OF_LEAVING_AT_FAIR_PRICE = 0.1
 
     def __init__(self):
         self._name = _NAME_MANAGER.generate_name()
@@ -72,6 +77,16 @@ class Customer:
     def set_daily_rate(self, new_rate: int) -> None:
         self._daily_rate = max(self.MIN_RATE, min(new_rate, self.MAX_RATE))
 
+    def leaves_at_current_rate(self) -> bool:
+        chance = self._get_chance_of_leaving()
+        return random.random() < chance
+
+    def _get_chance_of_leaving(self) -> float:
+        return (
+            self._CHANCE_OF_LEAVING_AT_FAIR_PRICE * (self._daily_rate - self.MIN_RATE) ** 2
+            / (self._get_fair_rate() - self._daily_rate) ** 2
+        )
+
     # Yes these would be better as class methods, but I'm not sure the constants would
     # be accessable though cls. (I don't really have time to find out.)
     def _get_small_crash_rate(self, proficiency: float) -> float:
@@ -86,6 +101,13 @@ class Customer:
             self._MAX_LARGE_CRASH_RATE,
             self._MIN_LARGE_CRASH_RATE,
             proficiency
+        )
+
+    def _get_fair_rate(self) -> int:
+        return self._lerp(
+            self._MAX_FAIR_RATE,
+            self._MIN_FAIR_RATE,
+            self._driving_proficiency
         )
     
     def _lerp(self, start: float, end: float, time: float) -> float:
@@ -156,3 +178,9 @@ class GameData:
 
         self._untracked_customers.remove(customer)
         self._tracked_customers.append(customer)
+
+    def remove_customer(self, customer: Customer) -> None:
+        if customer in self._untracked_customers:
+            self._untracked_customers.remove(customer)
+        elif customer in self._tracked_customers:
+            self._tracked_customers.remove(customer)
