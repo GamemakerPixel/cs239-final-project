@@ -61,3 +61,11 @@ class View(ABC):
     @abstractmethod
     def show_new_data_on_customer(self, customer: Customer) -> None:
         pass
+
+    @abstractmethod
+    def show_no_tracked_customers_message(self) -> None:
+        pass
+
+    @abstractmethod
+    def show_tracked_customer_data(self, customers: Sequence[Customer]) -> None:
+        pass

@@ -131,6 +131,28 @@ class CliView(View):
         )
         print("")
 
+    def show_no_tracked_customers_message(self) -> None:
+        print("You aren't currently tracking any customer data. Buy some to begin!\n")
+
+    def show_tracked_customer_data(self, customers: Sequence[Customer]) -> None:
+        print("Here is the data you have for each tracked customer:")
+
+        for customer in customers:
+            bucket = customer.get_proficiency_bucket()
+            print(
+                f"- {customer.get_name()}: "
+                f"{self._format_percent(bucket.min)}-{self._format_percent(bucket.max)}"
+                " Driving Skill, "
+                f"{self._format_percent(bucket.min_small_crash_rate)}-"
+                f"{self._format_percent(bucket.max_small_crash_rate)} "
+                "Small Crash Rate, "
+                f"{self._format_percent(bucket.min_large_crash_rate)}-"
+                f"{self._format_percent(bucket.max_large_crash_rate)} "
+                "Large Crash Rate"
+            )
+
+        print("")
+
     def _format_money(self, amount: int) -> str:
         negative_flag = amount < 0
         

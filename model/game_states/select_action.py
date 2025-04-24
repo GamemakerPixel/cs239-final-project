@@ -4,7 +4,7 @@ from model.menu_options import ActionMenuOption
 _OPTIONS_TO_STATES = {
     ActionMenuOption.CONTINUE: GameStateType.SELECT_ACTION,
     ActionMenuOption.RATES: GameStateType.MANAGE_RATES,
-    ActionMenuOption.VIEW_DATA: GameStateType.SELECT_ACTION,
+    ActionMenuOption.VIEW_DATA: GameStateType.VIEW_DATA,
     ActionMenuOption.BUY_DATA: GameStateType.BUY_DATA,
     ActionMenuOption.QUIT: GameStateType.QUIT,
 }

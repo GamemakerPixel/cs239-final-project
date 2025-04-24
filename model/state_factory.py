@@ -7,6 +7,7 @@ from model.game_states.set_rate import SetRate
 from model.game_states.title import Title
 from model.game_states.tutorial import Tutorial
 from model.game_states.quit_game import Quit
+from model.game_states.view_data import ViewData
 from model.view import View
 
 
@@ -17,7 +18,7 @@ _STATE_CLASS_MAPPING = {
     GameStateType.SELECT_ACTION: SelectAction,
     GameStateType.MANAGE_RATES: ManageRates,
     GameStateType.SET_RATE: SetRate,
-    GameStateType.VIEW_DATA: None,
+    GameStateType.VIEW_DATA: ViewData,
     GameStateType.BUY_DATA: BuyData,
     GameStateType.DAILY_RESULTS: None,
 }
