@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from model.menu_options import TitleMenuOption
+from model.menu_options import ActionMenuOption, TitleMenuOption
 
 
 class View(ABC):
@@ -18,4 +18,12 @@ class View(ABC):
 
     @abstractmethod
     def show_quit_message(self) -> None:
+        pass
+
+    @abstractmethod
+    def show_company_status(self, balance: int, customers: int) -> ActionMenuOption:
+        pass
+    
+    @abstractmethod
+    def show_action_menu(self) -> None:
         pass
