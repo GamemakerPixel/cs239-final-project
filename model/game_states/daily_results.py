@@ -1,4 +1,4 @@
-from collections.abc import MutableSequence
+from collections.abc import MutableSequence, Sequence
 
 from model.game_data import Customer
 from model.game_state import GameState, GameStateType
@@ -9,6 +9,8 @@ class DailyResults(GameState):
         customers = self._data.get_sorted_customers()
 
         self._handle_leaving_customers(customers)
+
+        self._handle_daily_fees(customers)
 
         return GameStateType.SELECT_ACTION
 
@@ -26,9 +28,16 @@ class DailyResults(GameState):
             return
 
         self._view.show_leaving_customers_message(leaving_customers)
+    
+    def _handle_daily_fees(self, customers: Sequence[Customer]) -> None:
+        total = 0
 
-#The following customers left due to their rate being too high:
-#- Sandy Sails
+        for customer in customers:
+            total += customer.get_daily_rate()
+
+        self._data.add_to_balance(total)
+
+        self._view.show_daily_fees_collected_message(total)
 
 #You collected a total of $850 from your customers in daily fees.
 

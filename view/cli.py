@@ -164,6 +164,12 @@ class CliView(View):
 
         print("")
 
+    def show_daily_fees_collected_message(self, total: int) -> None:
+        print(
+            f"You collected a total of {self._format_money(total)} from your "
+            "customers in daily fees.\n"
+        )
+
     def _format_money(self, amount: int) -> str:
         negative_flag = amount < 0
         

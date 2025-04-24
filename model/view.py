@@ -77,3 +77,7 @@ class View(ABC):
     @abstractmethod
     def show_leaving_customers_message(self, customers: Sequence[Customer]) -> None:
         pass
+
+    @abstractmethod
+    def show_daily_fees_collected_message(self, total: int) -> None:
+        pass
