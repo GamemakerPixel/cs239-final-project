@@ -1,0 +1,17 @@
+You are the CEO of a car insurance company. Your goal is
+to accumulate $10,000,000. You begin with $100,000 and
+3 customers. Each day you will gain a new customer, who
+will pay $2000 upfront and start with a daily fee of $100.
+Some customers are better at driving than others, and you
+can change their daily rates anywhere between $50-$750 a
+day. Beware however, customers will leave if they think
+their rate is too high for how they drive. Additionally,
+every day, each customer has a chance to get in a small
+crash, costing you anywhere between $500-$2,000, or worse,
+a large crash, costing you between $5,000-$10,000. Luckily
+for you, car manufacturers who sell cars to your customers
+have started collecting personal data about their driving
+abilities and are willing to sell it to you at a rate of
+$500 per customer.
+
+Good luck out there!

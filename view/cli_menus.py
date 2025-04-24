@@ -1,7 +1,6 @@
 from collections.abc import Sequence
 from pathlib import Path
 
-
 _OPTION_FORMAT = "(%d) %s"
 
 
@@ -29,7 +28,4 @@ def show_option_menu(options: Sequence[str], header: str = "") -> int:
 def show_message_from_file(text_file_path: Path) -> None:
     with open(text_file_path, "r") as file:
         print(file.read())
-
-    print("")
-
 
