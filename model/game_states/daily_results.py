@@ -17,6 +17,11 @@ class DailyResults(GameState):
 
         self._view.show_net_profit(net_profit)
 
+        if self._data.is_game_won():
+            return GameStateType.GAME_WON
+        elif self._data.is_bankrupt():
+            return GameStateType.BANKRUPT
+
         return GameStateType.SELECT_ACTION
 
     def _handle_leaving_customers(self, customers: MutableSequence[Customer]) -> None:

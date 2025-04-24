@@ -1,7 +1,9 @@
 from model.game_data import GameData
 from model.game_state import GameState, GameStateType
+from model.game_states.bankrupt import Bankrupt
 from model.game_states.buy_data import BuyData
 from model.game_states.daily_results import DailyResults
+from model.game_states.game_won import GameWon
 from model.game_states.manage_rates import ManageRates 
 from model.game_states.select_action import SelectAction
 from model.game_states.set_rate import SetRate
@@ -22,8 +24,8 @@ _STATE_CLASS_MAPPING = {
     GameStateType.VIEW_DATA: ViewData,
     GameStateType.BUY_DATA: BuyData,
     GameStateType.DAILY_RESULTS: DailyResults,
-    GameStateType.GAME_WON: None,
-    GameStateType.BANKRUPT: None,
+    GameStateType.GAME_WON: GameWon,
+    GameStateType.BANKRUPT: Bankrupt,
 }
 
 

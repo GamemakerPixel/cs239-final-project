@@ -1,7 +1,12 @@
 from collections.abc import Mapping, Sequence
 
 from model.game_data import CrashType, Customer, GameData
-from model.menu_options import ActionMenuOption, TitleMenuOption
+from model.menu_options import (
+    ActionMenuOption,
+    BankruptOption,
+    GameWonOption,
+    TitleMenuOption
+)
 from model.view import View
 from view import cli_menus
 from view.message_data_root import MESSAGE_DATA_PATH
@@ -207,6 +212,39 @@ class CliView(View):
     
     def show_net_profit(self, net_profit: int) -> None:
         print(f"Net profit for the day: {self._format_money(net_profit)}\n")
+    
+    def show_game_won_menu(self) -> GameWonOption:
+        print("Congratulations, you beat the game!")
+
+        header = (
+            "Would you like to keep playing, go to the main menu, or take the money "
+            "and run?"
+        )
+        options = [
+            GameWonOption.CONTINUE,
+            GameWonOption.MENU,
+            GameWonOption.QUIT
+        ]
+        text_options = [
+            "Continue playing, I wanna be a billionare.",
+            "Go to the main menu.",
+            "Take the money and run!",
+        ]
+
+        return options[cli_menus.show_option_menu(text_options, header)]
+    
+    def show_bankrupt_menu(self) -> BankruptOption:
+        header = "You've gone bankrupt! What would you like to do?"
+        options = [
+            BankruptOption.MENU,
+            BankruptOption.QUIT
+        ]
+        text_options = [
+            "Main Menu",
+            "Accept Defeat",
+        ]
+
+        return options[cli_menus.show_option_menu(text_options, header)]
 
     def _format_percent(self, value: float) -> str:
         return f"{value:.0%}"

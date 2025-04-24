@@ -13,3 +13,13 @@ class ActionMenuOption(Enum):
     VIEW_DATA = auto()
     BUY_DATA = auto()
     QUIT = auto()
+
+
+class GameWonOption(Enum):
+    CONTINUE = auto()
+    MENU = auto()
+    QUIT = auto()
+
+class BankruptOption(Enum):
+    MENU = auto()
+    QUIT = auto()

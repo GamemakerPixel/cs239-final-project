@@ -2,7 +2,12 @@ from abc import ABC, abstractmethod
 from collections.abc import Mapping, Sequence
 
 from model.game_data import CrashType, Customer
-from model.menu_options import ActionMenuOption, TitleMenuOption
+from model.menu_options import (
+    ActionMenuOption,
+    BankruptOption,
+    GameWonOption,
+    TitleMenuOption
+)
 
 
 class View(ABC):
@@ -96,4 +101,12 @@ class View(ABC):
 
     @abstractmethod
     def show_net_profit(self, net_profit: int) -> None:
+        pass
+
+    @abstractmethod
+    def show_game_won_menu(self) -> GameWonOption:
+        pass
+
+    @abstractmethod
+    def show_bankrupt_menu(self) -> BankruptOption:
         pass

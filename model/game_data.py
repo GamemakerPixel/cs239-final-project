@@ -146,6 +146,9 @@ class GameData:
     _MIN_LARGE_CRASH_COST = 5000
     _MAX_LARGE_CRASH_COST = 10000
 
+    _WIN_AMOUNT = 250000
+    _LOSE_AMOUNT = 0
+
 
     def __init__(self):
         # These should probably be sets.
@@ -153,6 +156,7 @@ class GameData:
         self._tracked_customers: list[Customer] = []
         self._balance = _INITIAL_BALANCE
         self._selected_customer: Customer | None = None
+        self._endless_mode = False
 
     @classmethod
     def get_crash_cost(cls, crash_type: CrashType) -> int:
@@ -202,6 +206,12 @@ class GameData:
     def get_selected_customer(self) -> Customer | None:
         return self._selected_customer
 
+    def is_game_won(self) -> bool:
+        return self._balance >= self._WIN_AMOUNT and not self._endless_mode
+
+    def is_bankrupt(self) -> bool:
+        return self._balance <= self._LOSE_AMOUNT
+
     def add_to_balance(self, amount: int) -> None:
         self._balance += amount
 
@@ -228,3 +238,6 @@ class GameData:
             self._untracked_customers.remove(customer)
         elif customer in self._tracked_customers:
             self._tracked_customers.remove(customer)
+
+    def enable_endless_mode(self) -> None:
+        self._endless_mode = True
