@@ -1,5 +1,6 @@
 from model.game_data import GameData
 from model.game_state import GameState, GameStateType
+from model.game_states.buy_data import BuyData
 from model.game_states.manage_rates import ManageRates 
 from model.game_states.select_action import SelectAction
 from model.game_states.set_rate import SetRate
@@ -17,7 +18,7 @@ _STATE_CLASS_MAPPING = {
     GameStateType.MANAGE_RATES: ManageRates,
     GameStateType.SET_RATE: SetRate,
     GameStateType.VIEW_DATA: None,
-    GameStateType.BUY_DATA: None,
+    GameStateType.BUY_DATA: BuyData,
     GameStateType.DAILY_RESULTS: None,
 }
 

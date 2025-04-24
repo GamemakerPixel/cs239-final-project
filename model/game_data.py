@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 import random
 
 from model.name_manager import NameManager
@@ -10,9 +11,34 @@ _NAME_MANAGER = NameManager()
 _NAME_MANAGER.load_name_data()
 
 
+class ProficiencyBucket:
+    BUCKET_SIZE = 0.2
+
+    def __init__(
+            self,
+            min: float,
+            max: float,
+            min_small_crash_rate: float,
+            max_small_crash_rate: float,
+            min_large_crash_rate: float,
+            max_large_crash_rate: float
+    ):
+        self.min = min
+        self.max = max
+        self.min_small_crash_rate = min_small_crash_rate
+        self.max_small_crash_rate = max_small_crash_rate
+        self.min_large_crash_rate = min_large_crash_rate
+        self.max_large_crash_rate = max_large_crash_rate
+
+
 class Customer:
     MIN_RATE = 50
     MAX_RATE = 750
+
+    _MIN_SMALL_CRASH_RATE = 0.04
+    _MAX_SMALL_CRASH_RATE = 0.2
+    _MIN_LARGE_CRASH_RATE = 0.0
+    _MAX_LARGE_CRASH_RATE = 0.2
 
     def __init__(self):
         self._name = _NAME_MANAGER.generate_name()
@@ -25,12 +51,53 @@ class Customer:
     def get_daily_rate(self) -> int:
         return self._daily_rate
 
+    def get_proficiency_bucket(self) -> ProficiencyBucket:
+        upper_bounds = [
+            x * ProficiencyBucket.BUCKET_SIZE
+            for x in range(1, int(1.0/ProficiencyBucket.BUCKET_SIZE) + 1)
+        ]
+
+        for upper_bound in upper_bounds:
+            if self._driving_proficiency < upper_bound:
+                lower_bound = upper_bound - ProficiencyBucket.BUCKET_SIZE
+                return ProficiencyBucket(
+                    lower_bound,
+                    upper_bound,
+                    self._get_small_crash_rate(upper_bound),
+                    self._get_small_crash_rate(lower_bound),
+                    self._get_large_crash_rate(upper_bound),
+                    self._get_large_crash_rate(lower_bound)
+                )
+
     def set_daily_rate(self, new_rate: int) -> None:
         self._daily_rate = max(self.MIN_RATE, min(new_rate, self.MAX_RATE))
 
+    # Yes these would be better as class methods, but I'm not sure the constants would
+    # be accessable though cls. (I don't really have time to find out.)
+    def _get_small_crash_rate(self, proficiency: float) -> float:
+        return self._lerp(
+            self._MAX_SMALL_CRASH_RATE,
+            self._MIN_SMALL_CRASH_RATE,
+            proficiency
+        )
+
+    def _get_large_crash_rate(self, proficiency: float) -> float:
+        return self._lerp(
+            self._MAX_LARGE_CRASH_RATE,
+            self._MIN_LARGE_CRASH_RATE,
+            proficiency
+        )
+    
+    def _lerp(self, start: float, end: float, time: float) -> float:
+        return (start * (1.0 - time)) + (end * time)
+
+
 
 class GameData:
+    DATA_PRICE = 500
+
     def __init__(self):
+        # These should probably be sets.
         self._untracked_customers = [Customer() for _ in range(_INITIAL_CUSTOMERS)]
         self._tracked_customers: list[Customer] = []
         self._balance = _INITIAL_BALANCE
@@ -48,12 +115,32 @@ class GameData:
         customers.extend(self._untracked_customers)
         customers.extend(self._tracked_customers)
 
-        customers.sort(key=lambda customer: customer.get_name())
+        self.sort_customer_list(customers)
 
         return customers
 
+    def get_sorted_untracked_customers(self) -> list[Customer]:
+        customers = self._untracked_customers[:]
+
+        self.sort_customer_list(customers)
+
+        return customers
+
+    def get_sorted_tracked_customers(self) -> list[Customer]:
+        customers = self._tracked_customers[:]
+
+        self.sort_customer_list(customers)
+
+        return customers
+
+    def sort_customer_list(self, customers: Sequence[Customer]) -> None:
+        customers.sort(key=lambda customer: customer.get_name())
+
     def get_selected_customer(self) -> Customer | None:
         return self._selected_customer
+
+    def add_to_balance(self, amount: int) -> None:
+        self._balance += amount
 
     # Ideally this would be done with a context manager, but I don't have time to
     # implement substates.
@@ -62,3 +149,10 @@ class GameData:
 
     def deselect_customer(self) -> None:
         self._selected_customer = None
+
+    def track_customer(self, customer: Customer) -> None:
+        if not customer in self._untracked_customers:
+            return
+
+        self._untracked_customers.remove(customer)
+        self._tracked_customers.append(customer)

@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 
-from model.game_data import Customer
+from model.game_data import Customer, GameData
 from model.menu_options import ActionMenuOption, TitleMenuOption
 from model.view import View
 from view import cli_menus
@@ -86,11 +86,50 @@ class CliView(View):
             Customer.MAX_RATE
         )
 
+    def show_no_customers_message(self) -> None:
+        print("You have no customers!\n")
+
     def show_updated_customer_rate(self, customer: Customer) -> None:
         print(
             f"{customer.get_name()}'s rate has been set to "
             f"{self._format_money(customer.get_daily_rate())}.\n"
         )
+
+    def show_no_untracked_customers_message(self) -> None:
+        print("You are currently tracking all of your customers!\n")
+
+    def show_buy_data_select_menu(self, customers: Sequence[Customer]) -> int:
+        header = (
+            "Who's driving data would you like to buy "
+            f"({self._format_money(GameData.DATA_PRICE)} per customer)?\n"
+        )
+
+        customer_entries = [customer.get_name() for customer in customers]
+
+        # -1 will indicate "Go Back" was chosen.
+        return cli_menus.show_option_menu(["Go Back"] + customer_entries, header) - 1
+
+    def show_not_enough_money_for_purchase_message(self) -> None:
+        print("You don't have enough money to purchase data!\n")
+
+    def show_new_data_on_customer(self, customer: Customer) -> None:
+        print(f"You buy driving data for {customer.get_name()}.")
+
+        bucket = customer.get_proficiency_bucket()
+        print(
+            f"Car manufacturers estimate their driving skill to be between "
+            f"{self._format_percent(bucket.min)}-{self._format_percent(bucket.max)}."
+        )
+        print("As such, they have the following probabilities of crashing:")
+        print(
+            f"Small Crash: {self._format_percent(bucket.min_small_crash_rate)}-"
+            f"{self._format_percent(bucket.max_small_crash_rate)}"
+        )
+        print(
+            f"Large Crash: {self._format_percent(bucket.min_large_crash_rate)}-"
+            f"{self._format_percent(bucket.max_large_crash_rate)}"
+        )
+        print("")
 
     def _format_money(self, amount: int) -> str:
         negative_flag = amount < 0
@@ -102,3 +141,6 @@ class CliView(View):
             amount_str = "-" + amount_str
 
         return amount_str
+
+    def _format_percent(self, value: float) -> str:
+        return f"{value:.0%}"
