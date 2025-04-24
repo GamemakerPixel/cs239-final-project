@@ -2,6 +2,7 @@ from collections.abc import Sequence
 from pathlib import Path
 
 _OPTION_FORMAT = "(%d) %s"
+_BOUNDED_INT_WARNING = "(Answer must be an integer, with no '$' or ','.)"
 
 
 def show_option_menu(options: Sequence[str], header: str = "") -> int:
@@ -21,6 +22,22 @@ def show_option_menu(options: Sequence[str], header: str = "") -> int:
 
             if index_selected >= 0 and index_selected < len(options):
                 return index_selected
+        except ValueError:
+            continue
+
+# Bounds are inclusive.
+def show_bounded_int_menu(header: str, lower_bound: int, upper_bound: int) -> int:
+    while True:
+        print(header + "\n" + _BOUNDED_INT_WARNING + "\n")
+        
+        user_input = input()
+        print("")
+
+        try:
+            value = int(user_input)
+
+            if value >= lower_bound and value <= upper_bound:
+                return value
         except ValueError:
             continue
 

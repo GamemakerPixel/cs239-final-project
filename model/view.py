@@ -33,3 +33,11 @@ class View(ABC):
     @abstractmethod
     def show_customer_rate_select_menu(self, customers: Sequence[Customer]) -> int:
         pass
+
+    @abstractmethod
+    def show_set_rate_menu(self, customer: Customer) -> int:
+        pass
+
+    @abstractmethod
+    def show_updated_customer_rate(self, customer: Customer) -> None:
+        pass

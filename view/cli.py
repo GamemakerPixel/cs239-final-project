@@ -71,6 +71,27 @@ class CliView(View):
         # -1 will indicate "Go Back" was chosen.
         return cli_menus.show_option_menu(["Go Back"] + customer_entries, header) - 1
 
+    def show_set_rate_menu(self, customer: Customer) -> int:
+        header = (
+            f"What would you like to set {customer.get_name()}'s daily rate to?\n"
+            f"(Their current rate is {self._format_money(customer.get_daily_rate())}.)"
+            "(You can set it anywhere between "
+            f"{self._format_money(Customer.MIN_RATE)}-"
+            f"{self._format_money(Customer.MAX_RATE)}.)"
+        )
+
+        return cli_menus.show_bounded_int_menu(
+            header,
+            Customer.MIN_RATE,
+            Customer.MAX_RATE
+        )
+
+    def show_updated_customer_rate(self, customer: Customer) -> None:
+        print(
+            f"{customer.get_name()}'s rate has been set to "
+            f"{self._format_money(customer.get_daily_rate())}.\n"
+        )
+
     def _format_money(self, amount: int) -> str:
         negative_flag = amount < 0
         

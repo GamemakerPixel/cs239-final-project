@@ -11,6 +11,9 @@ _NAME_MANAGER.load_name_data()
 
 
 class Customer:
+    MIN_RATE = 50
+    MAX_RATE = 750
+
     def __init__(self):
         self._name = _NAME_MANAGER.generate_name()
         self._driving_proficiency = random.random()
@@ -21,6 +24,9 @@ class Customer:
 
     def get_daily_rate(self) -> int:
         return self._daily_rate
+
+    def set_daily_rate(self, new_rate: int) -> None:
+        self._daily_rate = max(self.MIN_RATE, min(new_rate, self.MAX_RATE))
 
 
 class GameData:

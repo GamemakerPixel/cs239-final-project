@@ -12,4 +12,4 @@ class ManageRates(GameState):
             return GameStateType.SELECT_ACTION
 
         self._data.select_customer(customers[customer_index])
-        return GameStateType.SELECT_ACTION #SET_RATE
+        return GameStateType.SET_RATE

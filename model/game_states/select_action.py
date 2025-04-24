@@ -12,8 +12,6 @@ _OPTIONS_TO_STATES = {
 
 class SelectAction(GameState):
     def start(self) -> GameStateType | None:
-        self._data.deselect_customer()
-
         self._view.show_company_status(
             self._data.get_balance(),
             self._data.get_customer_count()
