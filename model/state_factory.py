@@ -1,5 +1,6 @@
 from model.game_data import GameData
 from model.game_state import GameState, GameStateType
+from model.game_states.manage_rates import ManageRates 
 from model.game_states.select_action import SelectAction
 from model.game_states.title import Title
 from model.game_states.tutorial import Tutorial
@@ -12,7 +13,7 @@ _STATE_CLASS_MAPPING = {
     GameStateType.SHOW_TUTORIAL: Tutorial,
     GameStateType.QUIT: Quit,
     GameStateType.SELECT_ACTION: SelectAction,
-    GameStateType.MANAGE_RATES: None,
+    GameStateType.MANAGE_RATES: ManageRates,
     GameStateType.SET_RATE: None,
     GameStateType.VIEW_DATA: None,
     GameStateType.BUY_DATA: None,

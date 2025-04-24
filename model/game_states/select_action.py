@@ -3,7 +3,7 @@ from model.menu_options import ActionMenuOption
 
 _OPTIONS_TO_STATES = {
     ActionMenuOption.CONTINUE: GameStateType.SELECT_ACTION,
-    ActionMenuOption.RATES: GameStateType.SELECT_ACTION,
+    ActionMenuOption.RATES: GameStateType.MANAGE_RATES,
     ActionMenuOption.VIEW_DATA: GameStateType.SELECT_ACTION,
     ActionMenuOption.BUY_DATA: GameStateType.SELECT_ACTION,
     ActionMenuOption.QUIT: GameStateType.QUIT,
@@ -12,6 +12,8 @@ _OPTIONS_TO_STATES = {
 
 class SelectAction(GameState):
     def start(self) -> GameStateType | None:
+        self._data.deselect_customer()
+
         self._view.show_company_status(
             self._data.get_balance(),
             self._data.get_customer_count()

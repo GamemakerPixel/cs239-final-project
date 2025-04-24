@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
+from collections.abc import Sequence
 
+from model.game_data import Customer
 from model.menu_options import ActionMenuOption, TitleMenuOption
 
 
@@ -26,4 +28,8 @@ class View(ABC):
     
     @abstractmethod
     def show_action_menu(self) -> None:
+        pass
+
+    @abstractmethod
+    def show_customer_rate_select_menu(self, customers: Sequence[Customer]) -> int:
         pass

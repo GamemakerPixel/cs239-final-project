@@ -1,3 +1,6 @@
+from collections.abc import Sequence
+
+from model.game_data import Customer
 from model.menu_options import ActionMenuOption, TitleMenuOption
 from model.view import View
 from view import cli_menus
@@ -53,6 +56,20 @@ class CliView(View):
             text_options,
             "What would you like to do?"
         )]
+
+    def show_customer_rate_select_menu(self, customers: Sequence[Customer]) -> int:
+        header = (
+            "Here are your customers and their current rates.\n"
+            "Select a customer to change their rate."
+        )
+
+        customer_entries = [
+            f"{customer.get_name()}: {self._format_money(customer.get_daily_rate())}"
+            for customer in customers
+        ]
+
+        # -1 will indicate "Go Back" was chosen.
+        return cli_menus.show_option_menu(["Go Back"] + customer_entries, header) - 1
 
     def _format_money(self, amount: int) -> str:
         negative_flag = amount < 0

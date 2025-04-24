@@ -17,9 +17,9 @@ class NameManager:
 
     def load_name_data(self) -> None:
         with open(_FIRST_NAMES_PATH, "r") as file:
-            self._first_names = file.readlines()
+            self._first_names = [line.strip() for line in file.readlines()]
         with open(_LAST_NAMES_PATH, "r") as file:
-            self._last_names = file.readlines()
+            self._last_names = [line.strip() for line in file.readlines()]
 
     # Picks a random combination of a first and last name that hasn't been used yet.
     def generate_name(self) -> str:
