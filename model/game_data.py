@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from enum import auto, Enum
 import random
 
 from model.name_manager import NameManager
@@ -9,6 +10,12 @@ _CUSTOMER_INITIAL_DAILY_RATE = 100
 
 _NAME_MANAGER = NameManager()
 _NAME_MANAGER.load_name_data()
+
+
+class CrashType:
+    NONE = auto()
+    SMALL = auto()
+    LARGE = auto()
 
 
 class ProficiencyBucket:
@@ -81,26 +88,43 @@ class Customer:
         chance = self._get_chance_of_leaving()
         return random.random() < chance
 
+    def gets_in_crash(self) -> CrashType:
+        large_crash_chance = self._get_large_crash_rate(self._driving_proficiency)
+        small_crash_chance = self._get_small_crash_rate(self._driving_proficiency)
+
+        value = random.random()
+
+        if value < large_crash_chance:
+            return CrashType.LARGE
+        elif value < large_crash_chance + small_crash_chance:
+            return CrashType.SMALL
+        else:
+            return CrashType.NONE
+
+    @classmethod
+    def _get_small_crash_rate(cls, proficiency: float) -> float:
+        return cls._lerp(
+            cls._MAX_SMALL_CRASH_RATE,
+            cls._MIN_SMALL_CRASH_RATE,
+            proficiency
+        )
+
+    @classmethod
+    def _get_large_crash_rate(cls, proficiency: float) -> float:
+        return cls._lerp(
+            cls._MAX_LARGE_CRASH_RATE,
+            cls._MIN_LARGE_CRASH_RATE,
+            proficiency
+        )
+
+    @classmethod
+    def _lerp(cls, start: float, end: float, time: float) -> float:
+        return (start * (1.0 - time)) + (end * time)
+
     def _get_chance_of_leaving(self) -> float:
         return (
             self._CHANCE_OF_LEAVING_AT_FAIR_PRICE * (self._daily_rate - self.MIN_RATE) ** 2
             / (self._get_fair_rate() - self._daily_rate) ** 2
-        )
-
-    # Yes these would be better as class methods, but I'm not sure the constants would
-    # be accessable though cls. (I don't really have time to find out.)
-    def _get_small_crash_rate(self, proficiency: float) -> float:
-        return self._lerp(
-            self._MAX_SMALL_CRASH_RATE,
-            self._MIN_SMALL_CRASH_RATE,
-            proficiency
-        )
-
-    def _get_large_crash_rate(self, proficiency: float) -> float:
-        return self._lerp(
-            self._MAX_LARGE_CRASH_RATE,
-            self._MIN_LARGE_CRASH_RATE,
-            proficiency
         )
 
     def _get_fair_rate(self) -> int:
@@ -110,13 +134,18 @@ class Customer:
             self._driving_proficiency
         )
     
-    def _lerp(self, start: float, end: float, time: float) -> float:
-        return (start * (1.0 - time)) + (end * time)
 
 
 
 class GameData:
     DATA_PRICE = 500
+    NEW_CUSTOMER_UPFRONT = 2000
+
+    _MIN_SMALL_CRASH_COST = 500
+    _MAX_SMALL_CRASH_COST = 2000
+    _MIN_LARGE_CRASH_COST = 5000
+    _MAX_LARGE_CRASH_COST = 10000
+
 
     def __init__(self):
         # These should probably be sets.
@@ -124,6 +153,18 @@ class GameData:
         self._tracked_customers: list[Customer] = []
         self._balance = _INITIAL_BALANCE
         self._selected_customer: Customer | None = None
+
+    @classmethod
+    def get_crash_cost(cls, crash_type: CrashType) -> int:
+        match (crash_type):
+            case CrashType.NONE:
+                return 0
+            case CrashType.SMALL:
+                difference = cls._MAX_SMALL_CRASH_COST - cls._MIN_SMALL_CRASH_COST
+                return cls._MIN_SMALL_CRASH_COST + int(random.random() * difference)
+            case CrashType.LARGE:
+                difference = cls._MAX_LARGE_CRASH_COST - cls._MIN_LARGE_CRASH_COST
+                return cls._MIN_LARGE_CRASH_COST + int(random.random() * difference)
 
     def get_balance(self) -> int:
         return self._balance
@@ -178,6 +219,9 @@ class GameData:
 
         self._untracked_customers.remove(customer)
         self._tracked_customers.append(customer)
+
+    def add_customer(self, customer: Customer) -> None:
+        self._untracked_customers.append(customer)
 
     def remove_customer(self, customer: Customer) -> None:
         if customer in self._untracked_customers:

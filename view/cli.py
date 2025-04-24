@@ -1,6 +1,6 @@
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 
-from model.game_data import Customer, GameData
+from model.game_data import CrashType, Customer, GameData
 from model.menu_options import ActionMenuOption, TitleMenuOption
 from model.view import View
 from view import cli_menus
@@ -170,6 +170,30 @@ class CliView(View):
             "customers in daily fees.\n"
         )
 
+    def show_no_claims_message(self) -> None:
+        print("You've recieved no claims today.\n")
+
+    def show_claims(self, claims: Mapping[Customer, tuple[CrashType, int]]) -> None:
+        total = 0
+
+        print("The following customers made insurance claims today:")
+        for customer, (crash_type, value) in claims.items():
+            total += value
+            print(
+                f"- {customer.get_name()}: {self._format_crash_type(crash_type)} "
+                f"({self._format_money(-value)})"
+            )
+
+        print("")
+
+        print(f"In total, these claims cost you {self._format_money(total)}.\n")
+    
+    def show_new_customer(self, customer: Customer, upfront: int) -> None:
+        print(
+            f"You gained a new customer: {customer.get_name()} "
+            f"(+{self._format_money(upfront)} upfront)\n"
+        )
+
     def _format_money(self, amount: int) -> str:
         negative_flag = amount < 0
         
@@ -180,6 +204,16 @@ class CliView(View):
             amount_str = "-" + amount_str
 
         return amount_str
+    
+    def show_net_profit(self, net_profit: int) -> None:
+        print(f"Net profit for the day: {self._format_money(net_profit)}\n")
 
     def _format_percent(self, value: float) -> str:
         return f"{value:.0%}"
+
+    def _format_crash_type(self, crash_type: CrashType) -> str:
+        match (crash_type):
+            case CrashType.SMALL:
+                return "Small Crash"
+            case CrashType.LARGE:
+                return "Large Crash"

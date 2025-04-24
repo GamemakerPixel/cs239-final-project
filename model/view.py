@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 
-from model.game_data import Customer
+from model.game_data import CrashType, Customer
 from model.menu_options import ActionMenuOption, TitleMenuOption
 
 
@@ -80,4 +80,20 @@ class View(ABC):
 
     @abstractmethod
     def show_daily_fees_collected_message(self, total: int) -> None:
+        pass
+
+    @abstractmethod
+    def show_no_claims_message(self) -> None:
+        pass
+
+    @abstractmethod
+    def show_claims(self, claims: Mapping[Customer, tuple[CrashType, int]]) -> None:
+        pass
+
+    @abstractmethod
+    def show_new_customer(self, customer: Customer, upfront: int) -> None:
+        pass
+
+    @abstractmethod
+    def show_net_profit(self, net_profit: int) -> None:
         pass

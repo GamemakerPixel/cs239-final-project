@@ -1,6 +1,6 @@
 from collections.abc import MutableSequence, Sequence
 
-from model.game_data import Customer
+from model.game_data import CrashType, Customer, GameData
 from model.game_state import GameState, GameStateType
 
 
@@ -10,7 +10,12 @@ class DailyResults(GameState):
 
         self._handle_leaving_customers(customers)
 
-        self._handle_daily_fees(customers)
+        net_profit = 0
+        net_profit += self._handle_daily_fees(customers)
+        net_profit -= self._handle_insurance_claims(customers)
+        net_profit += self._handle_new_customer()
+
+        self._view.show_net_profit(net_profit)
 
         return GameStateType.SELECT_ACTION
 
@@ -29,7 +34,7 @@ class DailyResults(GameState):
 
         self._view.show_leaving_customers_message(leaving_customers)
     
-    def _handle_daily_fees(self, customers: Sequence[Customer]) -> None:
+    def _handle_daily_fees(self, customers: Sequence[Customer]) -> int:
         total = 0
 
         for customer in customers:
@@ -39,14 +44,39 @@ class DailyResults(GameState):
 
         self._view.show_daily_fees_collected_message(total)
 
-#You collected a total of $850 from your customers in daily fees.
+        return total
+    
+    def _handle_insurance_claims(self, customers: Sequence[Customer]) -> int:
+        claims: dict[Customer, tuple[CrashType, int]] = {}
+        total = 0
 
-#The following customers made insurance claims:
-#- Bert Scute: Large Crash (-$8500)
-#- Bob Smith: Small Crash (-$650)
+        for customer in customers:
+            crash_type = customer.gets_in_crash()
 
-#In total, these claims cost you $9150.
+            if crash_type == CrashType.NONE:
+                continue
 
-#You gained a new customer: Sandra Claire (+$2000 upfront)
+            cost = GameData.get_crash_cost(crash_type)
+            claims[customer] = (crash_type, cost)
+            total += cost
 
-#Net profit for the day: -$6300
+        self._data.add_to_balance(-total)
+
+        if len(claims) == 0:
+            self._view.show_no_claims_message()
+            return 0
+        
+        self._view.show_claims(claims)
+
+        return total
+
+    def _handle_new_customer(self) -> int:
+        customer = Customer()
+        self._data.add_customer(customer)
+        self._data.add_to_balance(GameData.NEW_CUSTOMER_UPFRONT)
+
+        self._view.show_new_customer(customer, GameData.NEW_CUSTOMER_UPFRONT)
+
+        return GameData.NEW_CUSTOMER_UPFRONT
+
+
